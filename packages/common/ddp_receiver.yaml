@@ -1,0 +1,21 @@
+# © Copyright 2025 Stuart Parmenter
+# SPDX-License-Identifier: MIT
+
+# DDP Media Streaming
+# Enables DDP (Distributed Display Protocol) for media streaming and WebSocket control
+#
+# Required vars:
+#   ddp_port: UDP port for DDP stream (e.g., 4048)
+#   ws_ddp_host: WebSocket host for DDP control
+#   ws_ddp_port: WebSocket port for DDP control
+#   device_id: Device ID for WebSocket identification
+
+external_components:
+  - source: github://stuartparmenter/lvgl-ddp-stream@v0.5.2
+    components: [ddp_stream]
+
+# DDP Canvas Binding
+ddp_stream:
+  id: ddp_test
+  port: ${ddp_port}
+
