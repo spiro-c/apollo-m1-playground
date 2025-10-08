@@ -1,0 +1,100 @@
+substitutions:
+  name: "hd-wf2-r1"
+  friendly_name: "HD-WF2-R1"
+
+  # ===== Display / Panel =====
+  DISPLAY_CHAIN_LEN: "2" # Total number of panels you have connected
+  DISPLAY_W: "64"  # Most likely 64 * ${DISPLAY_CHAIN_LEN}
+  DISPLAY_H: "64"  # Most likely 64
+
+esphome:
+  name: "${name}"
+  friendly_name: "${friendly_name}"
+  name_add_mac_suffix: true
+  project:
+    name: stuartparmenter.apollo-m1-playground
+    version: dev # This will be replaced by the github workflows with the `release` version
+
+logger:
+
+api:
+
+wifi:
+  power_save_mode: none
+  ap:
+  on_connect:
+    - delay: 5s  # Gives time for improv results to be transmitted
+    - ble.disable:
+
+captive_portal:
+
+# This should point to the public location of the yaml file that will be adopted.
+# In this case it is the core yaml file that does not contain the extra things
+# that are provided by this factory yaml file as the user does not need these once adopted.
+dashboard_import:
+  package_import_url: github://spiro-c/apollo-m1-playground/HD-WF2-rev1.yaml@HD-WF2
+  import_full_config: true
+
+# Sets up Bluetooth LE (Only on ESP32) to allow the user
+# to provision wifi credentials to the device.
+esp32_improv:
+  authorizer: none
+
+# Sets up the improv via serial client for Wi-Fi provisioning.
+# Handy if your device has a usb port for the user to add credentials when they first get it.
+improv_serial:
+
+# Used to pull OTA updates
+http_request:
+
+ota:
+  - platform: http_request
+  - platform: esphome
+
+update:
+  - platform: http_request
+    name: Firmware
+    source: https://spiro-c/apollo-m1-playground/releases/latest/download/apollo-automation-m1-rev4.manifest.json
+
+packages:
+  # Base board/pins, LVGL root, services, etc.
+  controller: !include packages/controllers/HD-WF2-rev1.yaml
+
+  # Shared helpers, sensors, buttons
+  utils: !include packages/common/utils.yaml
+
+  # Shared fonts and LVGL styles
+  theme: !include packages/common/theme.yaml
+
+  # Shared DDP and DDP websocket control config
+  # Note: This is required by "Now Playing" and the "DDP Stream" pages
+  ddp: !include
+    file: packages/common/ddp.yaml
+    vars:
+      ddp_port: "4048"
+      ws_ddp_host: "homeassistant.local"
+      ws_ddp_port: "8788"
+      device_id: "${name}"
+
+  # Basic Boot Screen to avoid flashing or things not being ready yet
+  bios: !include packages/pages/bios.yaml
+
+  # Simple clock page
+  clock: !include
+    file: packages/pages/clock.yaml
+    vars:
+      page_friendly_name: "Clock"
+
+  # Page that uses lvgl-canvas-fx to render various effects (and change which in HA)
+  fx: !include
+    file: packages/pages/fx.yaml
+    vars:
+      page_friendly_name: "Visual Effects"
+
+  # DDP video streaming
+  ddp_stream: !include
+    file: packages/pages/ddp-stream.yaml
+    vars:
+      page_friendly_name: "Media Stream"
+      back_buffers: 0  # 0-2
+      default_video_src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"

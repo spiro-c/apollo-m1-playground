@@ -1,0 +1,58 @@
+# © Copyright 2025 Stuart Parmenter
+# SPDX-License-Identifier: MIT
+
+substitutions:
+  PANEL_W: "64"
+  PANEL_H: "32"
+
+esp32:
+  board: esp32-s3-devkitc-1
+  flash_size: 8MB
+  cpu_frequency: 240MHz
+  framework:
+    type: esp-idf
+    advanced:
+      compiler_optimization: PERF
+      enable_idf_experimental_features: true
+    sdkconfig_options:
+      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: y
+
+external_components:
+  - source: github://stuartparmenter/ESPHome-HUB75-MatrixDisplayWrapper@use-official-library
+
+display:
+  - platform: hub75_matrix_display
+    id: matrix
+    width: ${PANEL_W}
+    height: ${PANEL_H}
+    chain_length: ${DISPLAY_CHAIN_LEN}
+    clock_phase: false # fixes off by 1 issue
+    latch_blanking: 1
+    i2sspeed: HZ_20M
+
+    # Apollo Automation M-1 Controller specific pin mappings
+    # Rev4
+    R1_pin: 2
+    G1_pin: 6
+    B1_pin: 10
+    R2_pin: 3
+    G2_pin: 7
+    B2_pin: 11
+    A_pin: 39
+    B_pin: 38
+    C_pin: 37
+    D_pin: 36
+    E_pin: 21
+    LAT_pin: 33
+    OE_pin: 35
+    CLK_pin: 34
+
+    # for LVGL
+    double_buffer: false
+    auto_clear_enabled: false
+    update_interval: never
+
+lvgl:
+  buffer_size: 100%
+  displays:
+    - matrix
