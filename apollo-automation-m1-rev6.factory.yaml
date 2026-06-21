@@ -3,16 +3,24 @@ substitutions:
   friendly_name: "Apollo M-1"
 
   # ===== Display / Panel =====
-  DISPLAY_CHAIN_LEN: "1" # Total number of panels you have connected
-  DISPLAY_W: "64"  # Most likely 64 * ${DISPLAY_CHAIN_LEN}
-  DISPLAY_H: "64"  # Most likely 64
+  display_panel_width: 64
+  display_panel_height: 64
+  display_layout: HORIZONTAL
+  display_layout_rows: 1
+  display_layout_cols: 1
+  display_scan_wiring: STANDARD_TWO_SCAN
+
+  DISPLAY_W: ${display_panel_width * display_layout_cols}
+  DISPLAY_H: ${display_panel_height * display_layout_rows}
+
+  # Note: some variables need to be configured at the page level down below
 
 esphome:
   name: "${name}"
   friendly_name: "${friendly_name}"
   name_add_mac_suffix: true
   project:
-    name: stuartparmenter.apollo-m1-playground
+    name: pavlov-net.hub75-studio
     version: dev # This will be replaced by the github workflows with the `release` version
 
 logger:
@@ -28,11 +36,14 @@ wifi:
 
 captive_portal:
 
+web_server:
+  version: 3
+
 # This should point to the public location of the yaml file that will be adopted.
 # In this case it is the core yaml file that does not contain the extra things
 # that are provided by this factory yaml file as the user does not need these once adopted.
 dashboard_import:
-  package_import_url: github://stuartparmenter/apollo-m1-playground/apollo-automation-m1-rev6.yaml@main
+  package_import_url: github://pavlov-net/hub75-studio/apollo-automation-m1-rev6.yaml@main
   import_full_config: true
 
 # Sets up Bluetooth LE (Only on ESP32) to allow the user
@@ -54,11 +65,22 @@ ota:
 update:
   - platform: http_request
     name: Firmware
-    source: https://github.com/stuartparmenter/apollo-m1-playground/releases/latest/download/apollo-automation-m1-rev6.manifest.json
+    source: https://github.com/pavlov-net/hub75-studio/releases/latest/download/apollo-automation-m1-rev6.manifest.json
 
 packages:
+  # Sets minimum supported ESPHome version
+  esphome_version: !include packages/common/esphome-version.yaml
+
   # Base board/pins, LVGL root, services, etc.
-  controller: !include packages/controllers/apollo-automation-m1-rev6.yaml
+  controller: !include
+    file: packages/controllers/apollo-automation-m1-rev6.yaml
+    vars:
+      panel_width: ${display_panel_width}
+      panel_height: ${display_panel_height}
+      layout: ${display_layout}
+      layout_rows: ${display_layout_rows}
+      layout_cols: ${display_layout_cols}
+      scan_wiring: ${display_scan_wiring}
 
   # Shared helpers, sensors, buttons
   utils: !include packages/common/utils.yaml
@@ -67,7 +89,7 @@ packages:
   theme: !include packages/common/theme.yaml
 
   # Shared DDP and DDP websocket control config
-  # Note: This is required by "Now Playing" and the "DDP Stream" pages
+  # Note: This is required by "Now Playing", "Sendspin", and the "DDP Stream" pages
   ddp: !include
     file: packages/common/ddp.yaml
     vars:
@@ -84,6 +106,12 @@ packages:
     file: packages/pages/clock.yaml
     vars:
       page_friendly_name: "Clock"
+
+  # Sendspin music player page (album art + track info + progress)
+  sendspin: !include
+    file: packages/pages/sendspin.yaml
+    vars:
+      page_friendly_name: "Sendspin"
 
   # Page that uses lvgl-canvas-fx to render various effects (and change which in HA)
   fx: !include
@@ -103,10 +131,17 @@ packages:
     vars:
       page_friendly_name: "Pong"
 
-  # DDP video streaming
+  # DDP display target (stream id 1 -- for LedFx, etc)
+  ddp_receiver: !include
+    file: packages/pages/ddp-receiver.yaml
+    vars:
+      page_friendly_name: "DDP Display"
+      back_buffers: 2
+
+  # Media Proxy controlled DDP video streaming
   ddp_stream: !include
     file: packages/pages/ddp-stream.yaml
     vars:
       page_friendly_name: "Media Stream"
-      back_buffers: 2  # 0-2
+      back_buffers: 2
       default_video_src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"

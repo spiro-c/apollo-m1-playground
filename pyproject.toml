@@ -1,0 +1,14 @@
+[project]
+name = "hub75-studio"
+version = "0.7.2"
+description = "ESPHome project for HUB75 matrix controllers"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "esphome>=2026.6.0,<2026.7",
+    # PlatformIO (used by ESPHome for ESP-IDF builds) expects pip to be available
+    "pip",
+]
+
+[dependency-groups]
+dev = []
