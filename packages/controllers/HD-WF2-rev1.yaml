@@ -17,35 +17,25 @@ esp32:
     sdkconfig_options:
       CONFIG_ESP32S3_DATA_CACHE_LINE_64B: y
 
-external_components:
-  - source: github://stuartparmenter/ESPHome-HUB75-MatrixDisplayWrapper@use-official-library
+#external_components:
+#  - source: github://stuartparmenter/ESPHome-HUB75-MatrixDisplayWrapper@use-official-library
 
 display:
-  - platform: hub75_matrix_display
+  - platform: hub75
     id: matrix
-    width: ${PANEL_W}
-    height: ${PANEL_H}
-    chain_length: ${DISPLAY_CHAIN_LEN}
-    clock_phase: false # fixes off by 1 issue
-    latch_blanking: 1
-    i2sspeed: HZ_20M
+    board: huidu-hd-wf2
+    panel_width: ${panel_width}
+    panel_height: ${panel_height}
+    layout: ${layout}
+    layout_rows: ${layout_rows}
+    layout_cols: ${layout_cols}
+    scan_wiring: ${scan_wiring}
 
-    # Apollo Automation M-1 Controller specific pin mappings
-    # Rev4
-    R1_pin: 2
-    G1_pin: 6
-    B1_pin: 10
-    R2_pin: 3
-    G2_pin: 7
-    B2_pin: 11
-    A_pin: 39
-    B_pin: 38
-    C_pin: 37
-    D_pin: 36
-    E_pin: 21
-    LAT_pin: 33
-    OE_pin: 35
-    CLK_pin: 34
+    clock_phase: false
+    latch_blanking: 1
+    clock_speed: 20MHz
+
+    bit_depth: 8
 
     # for LVGL
     double_buffer: false
@@ -53,6 +43,7 @@ display:
     update_interval: never
 
 lvgl:
+  byte_order: little_endian
   buffer_size: 100%
   displays:
     - matrix
