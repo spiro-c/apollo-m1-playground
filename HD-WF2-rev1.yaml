@@ -44,20 +44,29 @@ packages:
 
     # Shared DDP and DDP websocket control config
     # Note: This is required by "Now Playing" and the "DDP Stream" pages
-    - path: packages/common/ddp.yaml
+    # - path: packages/common/ddp.yaml
+    #   vars:
+    #     ddp_port: "4048"
+    #     ws_ddp_host: "homeassistant.local"
+    #     ws_ddp_port: "8788"
+    #     device_id: "${name}"
+
+    # Shared DDP and DDP websocket control config
+    # Note: This is required by "Now Playing" and the "DDP Stream" pages
+    - path: packages/common/ddp_receiver.yaml
       vars:
         ddp_port: "4048"
-        ws_ddp_host: "homeassistant.local"
-        ws_ddp_port: "8788"
-        device_id: "${name}"
+    #     ws_ddp_host: "homeassistant.local"
+    #     ws_ddp_port: "8788"
+    #     device_id: "${name}"
 
     # WiZ Smart Remote Support
-    - path: packages/common/wizmote.yaml
-      vars:
-        wizmote_page_1: "page_time_date"  # packages/pages/clock.yaml
-        wizmote_page_2: "fx_page"         # packages/pages/fx.yaml
-        wizmote_page_3: "page_pong"       # packages/pages/pong.yaml
-        wizmote_page_4: "ddp_video"       # packages/pages/ddp-stream.yaml
+    # - path: packages/common/wizmote.yaml
+    #   vars:
+    #     wizmote_page_1: "page_time_date"  # packages/pages/clock.yaml
+    #     wizmote_page_2: "fx_page"         # packages/pages/fx.yaml
+    #     wizmote_page_3: "page_pong"       # packages/pages/pong.yaml
+    #     wizmote_page_4: "ddp_video"       # packages/pages/ddp-stream.yaml
 
     # Basic Boot Screen to avoid flashing or things not being ready yet
     - path: packages/pages/bios.yaml
@@ -74,8 +83,8 @@ packages:
         weather_entity: "weather.home"
         high_entity: "sensor.weather_today_high"
         low_entity:  "sensor.weather_today_low"
-        alarm_entity: "alarm_control_panel.example_alarm"
-        person_a: "person.person_a"
+        alarm_entity: "alarm_control_panel.area1"
+        person_a: "person.spiro_chekano"
         person_b: "person.person_b"
         person_a_icon: "\U000F040A"
         person_b_icon: "\U000F0B8F"
@@ -105,11 +114,19 @@ packages:
     #     msr2_prefix: "apollo_msr_2_xxxxxx"
 
     # DDP video streaming
-    - path: packages/pages/ddp-stream.yaml
+    # - path: packages/pages/ddp-stream.yaml
+    #   vars:
+    #     page_friendly_name: "Media Stream"
+    #     back_buffers: 0  # 0-2
+    #     default_video_src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+
+    # DDP receiver
+    - path: packages/pages/ddp-receiver.yaml
       vars:
-        page_friendly_name: "Media Stream"
+        page_friendly_name: "DDP Receiver "
         back_buffers: 0  # 0-2
-        default_video_src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        ddp_port: "4048"
+
 
     # Team Tracker Page (can be included multiple times with different entities and uids)
     # - path: packages/pages/teamtracker.yaml
@@ -131,6 +148,6 @@ display:
     virtual_matrix:
       enabled: true
       rows: 2           # number of panel rows
-      cols: 1           # number of panel columns
+      cols: 1          # number of panel columns
       chain_type: CHAIN_BOTTOM_LEFT_UP   # layout mapping type
       scan_type: STANDARD_TWO_SCAN        # typical scan type; adjust if your panels are unusual
