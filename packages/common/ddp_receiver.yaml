@@ -25,9 +25,9 @@ ddp:
 #   ws_port: ${ws_ddp_port}
 #   device_id: ${device_id}
 
-wifi:
-  on_connect:
-    then:
-      - delay: 2s
-      - lambda: |-
-          id(mp_control).connect();
+# wifi:
+#   on_connect:
+#     then:
+#       - delay: 2s
+#       - lambda: |-
+#           id(mp_control).connect();
