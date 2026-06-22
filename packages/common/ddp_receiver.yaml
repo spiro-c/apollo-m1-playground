@@ -11,11 +11,23 @@
 #   device_id: Device ID for WebSocket identification
 
 external_components:
-  - source: github://stuartparmenter/lvgl-ddp-stream@v0.5.2
-    components: [ddp_stream]
+  - source: github://pavlov-net/ddp-esphome@v0.8.0
 
 # DDP Canvas Binding
-ddp_stream:
-  id: ddp_test
+ddp:
   port: ${ddp_port}
+  # metrics: true
 
+# WebSocket control
+media_proxy_control:
+  id: mp_control
+  ws_host: ${ws_ddp_host}
+  ws_port: ${ws_ddp_port}
+  device_id: ${device_id}
+
+wifi:
+  on_connect:
+    then:
+      - delay: 2s
+      - lambda: |-
+          id(mp_control).connect();
