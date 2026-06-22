@@ -19,11 +19,11 @@ ddp:
   # metrics: true
 
 # WebSocket control
-media_proxy_control:
-  id: mp_control
-  ws_host: ${ws_ddp_host}
-  ws_port: ${ws_ddp_port}
-  device_id: ${device_id}
+# media_proxy_control:
+#   id: mp_control
+#   ws_host: ${ws_ddp_host}
+#   ws_port: ${ws_ddp_port}
+#   device_id: ${device_id}
 
 wifi:
   on_connect:
